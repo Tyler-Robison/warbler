@@ -227,8 +227,8 @@ class UserModelTestCase(TestCase):
         db.session.delete(test_user)
         db.session.commit()
 
-        self.assertEqual(test_user.username, 'testuser1')
-        self.assertEqual(test_user.id, 1111)
+        self.assertNotEqual(test_user.username, 'testuser1')
+        self.assertNotEqual(test_user.id, 1111)
 
 
 
