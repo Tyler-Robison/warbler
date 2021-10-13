@@ -1,0 +1,7 @@
+This is a log of bugs I have found and status of fixes.
+Does not include known bugs that are part of project.
+
+1) ipython broken in various ways - fixed
+    upgraded Werkzeug to 0.15.5 and removed ipython from requirements.txt since I already have it installed outside VENV.
+
+2) SQL Alchemy in_() does not work for relationships, have to make list of ids.

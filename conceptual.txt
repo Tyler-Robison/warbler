@@ -1,0 +1,24 @@
+1) How is the logged in user being kept track of?
+
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
+
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+
+    else:
+        g.user = None
+
+before_request registers a function to run before each request. 
+
+This sets g.user as a variable that can be accessed by all view functions
+Functionally similar to global variable even though it isn't one. 
+
+2) What is Flask's g object?
+
+g is an object provided by Flask, it is a global namespace for holding any data you want.
+A before_request handler could set g.user, which will be accessible to the route and other functions.
+
+g cannot store data across requests, need to use another storage method for that.
+
