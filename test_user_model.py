@@ -42,7 +42,7 @@ def create_user():
     return u
 
 class UserModelTestCase(TestCase):
-    """Test views for messages."""
+    """Test methods for User."""
 
     def setUp(self):
         """Create test client, add sample data."""
@@ -68,8 +68,6 @@ class UserModelTestCase(TestCase):
 
         self.u2 = u2
         self.uid2 = uid2
-
-        self.client = app.test_client()
 
     def tearDown(self):
         res = super().tearDown()
@@ -229,6 +227,34 @@ class UserModelTestCase(TestCase):
 
         self.assertNotEqual(test_user.username, 'testuser1')
         self.assertNotEqual(test_user.id, 1111)
+
+    def test_user_messages(self):
+        """Tests that posted messages can be seen by User.messages"""    
+
+        msg = Message(text='test msg')
+        self.u1.messages.append(msg)
+    
+        db.session.commit()
+        self.assertEqual(len(self.u1.messages), 1)
+
+    def test_user_likes(self):
+        """Tests that likes can be viewed by User.likes"""  
+
+        msg = Message(text='test msg')
+        self.u1.messages.append(msg)
+    
+        db.session.commit()
+
+        self.u1.likes.append(msg)
+        db.session.commit()
+
+        self.assertEqual(len(self.u1.likes), 1)
+
+
+
+
+
+
 
 
 
