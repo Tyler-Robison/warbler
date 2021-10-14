@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
@@ -90,7 +90,7 @@ def signup():
             db.session.commit()
 
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            flash("Username or email already taken", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -176,7 +176,7 @@ def show_following(user_id):
         return redirect("/")
 
     user = User.query.get_or_404(user_id)
-    # Users created by me currently aren't following/being followed
+    
     return render_template('users/following.html', user=user)
 
 
@@ -189,7 +189,7 @@ def users_followers(user_id):
         return redirect("/")
 
     user = User.query.get_or_404(user_id)
-    # Users created by me currently aren't following/being followed
+    
     return render_template('users/followers.html', user=user)
 
 
@@ -279,6 +279,42 @@ def delete_user():
 
     return redirect("/signup")
 
+@app.route('/users/like', methods=["POST"])
+def add_or_remove_like():
+    """Allows users to like or unlike messages"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    
+
+    msg_id = request.json['msg_id']
+    msg = Message.query.filter_by(id = msg_id).first()
+
+    if msg.user_id == g.user.id:
+        return jsonify({'result': 'Cant like own message'})
+
+    if msg not in g.user.likes:
+        g.user.likes.append(msg)
+        db.session.commit()
+        return jsonify({'result': 'like added'})
+    else:
+        g.user.likes.remove(msg)
+        db.session.commit()
+        return jsonify({'result': 'like removed'})
+
+
+@app.route('/users/<int:user_id>/likes')   
+def show_likes(user_id):
+    """Displays liked messages""" 
+
+    user = User.query.get_or_404(user_id)
+
+    messages = user.likes
+
+    return render_template('users/likes.html', messages=messages, user=user)    
+
 
 ##############################################################################
 # Messages routes:
@@ -308,7 +344,7 @@ def delete_user():
 @app.route('/messages/new', methods=["POST"])
 def messages_add():
     """Add a message"""
-    # raise
+    
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
@@ -339,40 +375,16 @@ def messages_destroy(message_id):
         return redirect("/")
 
     msg = Message.query.get_or_404(message_id)
+    if msg.user_id != g.user.id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
     db.session.delete(msg)
     db.session.commit()
 
     return redirect(f"/users/{g.user.id}")
 
-@app.route('/users/like', methods=["POST"])
-def add_like():
-    """Allows users to like messages"""
 
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    msg_id = request.json['msg_id']
-    msg = Message.query.filter_by(id = msg_id).first()
-    if msg not in g.user.likes:
-        g.user.likes.append(msg)
-        db.session.commit()
-        return 'like added'
-    else:
-        g.user.likes.remove(msg)
-        db.session.commit()
-        return 'like removed'
-
-
-@app.route('/users/<int:user_id>/likes')   
-def show_likes(user_id):
-    """Displays liked messages""" 
-
-    user = User.query.get_or_404(user_id)
-
-    messages = user.likes
-
-    return render_template('users/likes.html', messages=messages, user=user)
 
 
 ##############################################################################

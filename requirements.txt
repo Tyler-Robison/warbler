@@ -2,6 +2,7 @@ appnope==0.1.0
 autopep8==1.5.7
 backcall==0.1.0
 bcrypt==3.1.4
+beautifulsoup4==4.8.2
 blinker==1.4
 cffi==1.14.2
 Click==7.0
@@ -35,3 +36,5 @@ traitlets==4.3.2
 wcwidth==0.1.7
 Werkzeug==0.15.5
 WTForms==2.2.1
+
+# May have installed ipython-genutils-0.2.0 as soup dependency

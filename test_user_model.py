@@ -5,6 +5,7 @@
 #    python -m unittest test_user_model.py
 
 
+
 import os
 from unittest import TestCase
 from sqlalchemy import exc
@@ -224,9 +225,9 @@ class UserModelTestCase(TestCase):
 
         db.session.delete(test_user)
         db.session.commit()
-
-        self.assertNotEqual(test_user.username, 'testuser1')
-        self.assertNotEqual(test_user.id, 1111)
+        
+        self.assertEqual(User.query.filter_by(id=1111).first(), None)
+        
 
     def test_user_messages(self):
         """Tests that posted messages can be seen by User.messages"""    
