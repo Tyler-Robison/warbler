@@ -319,28 +319,6 @@ def show_likes(user_id):
 ##############################################################################
 # Messages routes:
 
-# @app.route('/messages/new', methods=["GET", "POST"])
-# def messages_add():
-#     """Add a message:
-
-#     Show form if GET. If valid, update message and redirect to user page.
-#     """
-
-#     if not g.user:
-#         flash("Access unauthorized.", "danger")
-#         return redirect("/")
-
-#     form = MessageForm()
-
-#     if form.validate_on_submit():
-#         msg = Message(text=form.text.data)
-#         g.user.messages.append(msg)
-#         db.session.commit()
-
-#         return redirect(f"/users/{g.user.id}")
-
-#     return render_template('messages/new.html', form=form)
-
 @app.route('/messages/new', methods=["POST"])
 def messages_add():
     """Add a message"""
